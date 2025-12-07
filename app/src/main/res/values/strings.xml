@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Semester Three Project</string>
+    <string name="title_activity_application">ApplicationActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_card">CardActivity</string>
+    <string name="title_activity_dropdown">Dropdown</string>
+    <string name="title_activity_dash_board_activit6y">DashBoardActivit6y</string>
+    <string name="title_activity_home_screen">HomeScreen</string>
+    <string name="title_activity_homescreen">Homescreen</string>
 </resources>
