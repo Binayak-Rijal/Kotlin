@@ -1,5 +1,6 @@
-package com.example.semesterthreeproject.model
+package com.example.semesterthreeproject.repository
 
+import com.example.semesterthreeproject.model.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
@@ -81,7 +82,7 @@ class UserRepoImpl : UserRepo {
         callback: (Boolean, String, UserModel?) -> Unit
     ) {
         ref.child(userId)
-            .addValueEventListener(object : ValueEventListener{
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()){
                         val users = snapshot.getValue(UserModel::class.java)
@@ -98,7 +99,7 @@ class UserRepoImpl : UserRepo {
     }
 
     override fun getAllUser(callback: (Boolean, String, List<UserModel>) -> Unit) {
-        ref.addValueEventListener(object: ValueEventListener{
+        ref.addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()){
                     val allUsers = mutableListOf<UserModel>()

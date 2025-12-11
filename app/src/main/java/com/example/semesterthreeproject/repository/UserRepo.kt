@@ -1,5 +1,6 @@
-package com.example.semesterthreeproject.model
+package com.example.semesterthreeproject.repository
 
+import com.example.semesterthreeproject.model.UserModel
 import com.google.firebase.auth.FirebaseUser
 
 interface UserRepo {
@@ -35,7 +36,7 @@ interface UserRepo {
 
     fun deleteAccount(userId: String, callback: (Boolean, String) -> Unit)
 
-    fun getUserById(userId: String, callback: (Boolean, String , UserModel?) -> Unit)
+    fun getUserById(userId: String, callback: (Boolean, String, UserModel?) -> Unit)
 
     fun getAllUser(callback: (Boolean, String , List<UserModel>) -> Unit)
 
