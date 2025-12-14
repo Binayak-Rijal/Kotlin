@@ -9,4 +9,5 @@
     <string name="title_activity_dash_board_activit6y">DashBoardActivit6y</string>
     <string name="title_activity_home_screen">HomeScreen</string>
     <string name="title_activity_homescreen">Homescreen</string>
+    <string name="title_activity_forget_password">ForgetPasswordActivity</string>
 </resources>
