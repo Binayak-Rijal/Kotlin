@@ -59,6 +59,9 @@ import com.example.semesterthreeproject.ui.theme.White
 import java.util.Calendar
 import android.content.Context
 import android.widget.Toast
+import com.example.semesterthreeproject.model.UserModel
+import com.example.semesterthreeproject.repository.UserRepoImpl
+import com.example.semesterthreeproject.viewmodel.UserViewModel
 
 
 class RegistrationActivity : ComponentActivity() {
@@ -74,6 +77,10 @@ class RegistrationActivity : ComponentActivity() {
 
 @Composable
 fun RegisterBody(){
+
+    val  userViewModel = remember { UserViewModel(UserRepoImpl()) }
+
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var visibility by remember { mutableStateOf(false) }
@@ -247,6 +254,32 @@ fun RegisterBody(){
                             "Please agree to terms and conditions",
                             Toast.LENGTH_SHORT).show()
                     }else{
+                        userViewModel.register(email,password){
+                            success,msg,userId ->
+                            if (success){
+                                val model = UserModel(
+                                    userId = userId,
+                                    email = email,
+                                    firstName = "",
+                                    lastName = "",
+                                    dob = selectedDate
+                                )
+                                userViewModel.addUserToDatabase(userId,model){
+                                    success, msg ->
+                                    if(success){
+                                        Toast.makeText(context,msg,
+                                            Toast.LENGTH_SHORT).show()
+                                    }else{
+                                        Toast.makeText(context, msg,
+                                            Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            }else{
+                                Toast.makeText(context,
+                                    msg,
+                                    Toast.LENGTH_SHORT).show()
+                            }
+                        }
                         // Check if email already exists
                         val localEmail = sharedPreference.getString("email", null)
 
@@ -256,15 +289,15 @@ fun RegisterBody(){
                                 Toast.LENGTH_SHORT).show()
                         } else {
                             // Save new user
-                            editor.putString("email", email)
-                            editor.putString("password", password)
-                            editor.putString("date", selectedDate)
-                            editor.apply()
-
-                            Toast.makeText(context,
-                                "Registration success",
-                                Toast.LENGTH_SHORT).show()
-                            activity.finish()
+//                            editor.putString("email", email)
+//                            editor.putString("password", password)
+//                            editor.putString("date", selectedDate)
+//                            editor.apply()
+//
+//                            Toast.makeText(context,
+//                                "Registration success",
+//                                Toast.LENGTH_SHORT).show()
+//                            activity.finish()
                         }
                     }
                 },

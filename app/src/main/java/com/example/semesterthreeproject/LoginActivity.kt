@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -36,6 +37,8 @@ import com.example.semesterthreeproject.ui.theme.Black
 import com.example.semesterthreeproject.ui.theme.Blue
 import com.example.semesterthreeproject.ui.theme.PurpleGrey80
 import com.example.semesterthreeproject.ui.theme.White
+import com.example.semesterthreeproject.repository.UserRepoImpl
+import com.example.semesterthreeproject.viewmodel.UserViewModel
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +53,8 @@ class LoginActivity : ComponentActivity() {
 @Composable
 fun LoginBody() {
 
+    val userViewModel = remember { UserViewModel(UserRepoImpl()) }
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var visibility by remember { mutableStateOf(false) }
@@ -57,11 +62,6 @@ fun LoginBody() {
     val context = LocalContext.current
     val activity = context as Activity
     val sharedPreferences = context.getSharedPreferences("User", Context.MODE_PRIVATE)
-
-    val localEmail: String? = sharedPreferences.getString("email","")
-    val localPassword: String? = sharedPreferences.getString("password","")
-
-
 
     Scaffold { padding ->
         Column(
@@ -186,18 +186,44 @@ fun LoginBody() {
                     .fillMaxWidth()
                     .padding(vertical = 15.dp, horizontal = 15.dp)
                     .clickable {
-
+                        // Handle forgot password
                     }
             )
 
             Button(
                 onClick = {
-                    val intent = Intent(context, DashBoardActivity::class.java)
-                    intent.putExtra("email",email)
-                    intent.putExtra("password",password)
+                    // Validate input
+                    if (email.isEmpty() || password.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "Please enter email and password",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@Button
+                    }
 
-                    context.startActivity(intent)
-                    activity.finish()
+                    // Login with Firebase
+                    userViewModel.login(email, password) { success, msg ->
+                        if (success) {
+                            Toast.makeText(
+                                context,
+                                "Login successful",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                            // Navigate to dashboard
+                            val intent = Intent(context, DashBoardActivity::class.java)
+                            intent.putExtra("email", email)
+                            context.startActivity(intent)
+                            activity.finish()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                msg,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 },
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp),
                 modifier = Modifier
@@ -221,7 +247,6 @@ fun LoginBody() {
                     .padding(15.dp)
                     .clickable {
                         val intent = Intent(context, RegistrationActivity::class.java)
-
                         context.startActivity(intent)
                         activity.finish()
                     },
