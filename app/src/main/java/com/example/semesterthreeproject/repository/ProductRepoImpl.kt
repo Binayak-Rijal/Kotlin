@@ -1,17 +1,11 @@
 package com.example.semesterthreeproject.repository
 
 import com.example.semesterthreeproject.model.ProductModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 
 class ProductRepoImpl : ProductRepo {
 
-    val database: FirebaseDatabase = FirebaseDatabase.getInstance()
-
-    val ref: DatabaseReference = database.getReference("products")
+    private val ref: DatabaseReference = FirebaseDatabase.getInstance().getReference("products")
 
     override fun addProduct(
         productId: String,
@@ -19,11 +13,7 @@ class ProductRepoImpl : ProductRepo {
         callback: (Boolean, String) -> Unit
     ) {
         ref.child(productId).setValue(model).addOnCompleteListener {
-            if (it.isSuccessful) {
-                callback(true, "Product added successfully")
-            } else {
-                callback(false, "${it.exception?.message}")
-            }
+            callback(it.isSuccessful, it.exception?.message ?: "Success")
         }
     }
 
@@ -33,11 +23,7 @@ class ProductRepoImpl : ProductRepo {
         callback: (Boolean, String) -> Unit
     ) {
         ref.child(productId).setValue(model).addOnCompleteListener {
-            if (it.isSuccessful) {
-                callback(true, "Product updated successfully")
-            } else {
-                callback(false, "${it.exception?.message}")
-            }
+            callback(it.isSuccessful, it.exception?.message ?: "Success")
         }
     }
 
@@ -46,11 +32,7 @@ class ProductRepoImpl : ProductRepo {
         callback: (Boolean, String) -> Unit
     ) {
         ref.child(productId).removeValue().addOnCompleteListener {
-            if (it.isSuccessful) {
-                callback(true, "Product deleted successfully")
-            } else {
-                callback(false, "${it.exception?.message}")
-            }
+            callback(it.isSuccessful, it.exception?.message ?: "Success")
         }
     }
 
@@ -59,16 +41,11 @@ class ProductRepoImpl : ProductRepo {
         callback: (Boolean, String, ProductModel?) -> Unit
     ) {
         ref.child(productId)
-            .addValueEventListener(object : ValueEventListener {
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        val product = snapshot.getValue(ProductModel::class.java)
-                        if (product != null) {
-                            callback(true, "Product fetched successfully", product)
-                        }
-                    } else {
-                        callback(false, "Product not found", null)
-                    }
+                    val product = snapshot.getValue(ProductModel::class.java)
+                    callback(true, "Done", product)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -77,21 +54,16 @@ class ProductRepoImpl : ProductRepo {
             })
     }
 
-    override fun getAllProducts(callback: (Boolean, String, List<ProductModel>) -> Unit) {
-        ref.addValueEventListener(object : ValueEventListener {
+    override fun getAllProducts(
+        callback: (Boolean, String, List<ProductModel>) -> Unit
+    ) {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val allProducts = mutableListOf<ProductModel>()
-                    for (data in snapshot.children) {
-                        val product = data.getValue(ProductModel::class.java)
-                        if (product != null) {
-                            allProducts.add(product)
-                        }
-                    }
-                    callback(true, "Products fetched successfully", allProducts)
-                } else {
-                    callback(false, "No products found", emptyList())
+                val list = snapshot.children.mapNotNull {
+                    it.getValue(ProductModel::class.java)
                 }
+                callback(true, "Done", list)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -104,21 +76,15 @@ class ProductRepoImpl : ProductRepo {
         category: String,
         callback: (Boolean, String, List<ProductModel>) -> Unit
     ) {
-        ref.orderByChild("category").equalTo(category)
-            .addValueEventListener(object : ValueEventListener {
+        ref.orderByChild("category")
+            .equalTo(category)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        val products = mutableListOf<ProductModel>()
-                        for (data in snapshot.children) {
-                            val product = data.getValue(ProductModel::class.java)
-                            if (product != null) {
-                                products.add(product)
-                            }
-                        }
-                        callback(true, "Products fetched successfully", products)
-                    } else {
-                        callback(false, "No products found in this category", emptyList())
+                    val list = snapshot.children.mapNotNull {
+                        it.getValue(ProductModel::class.java)
                     }
+                    callback(true, "Done", list)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -131,29 +97,18 @@ class ProductRepoImpl : ProductRepo {
         query: String,
         callback: (Boolean, String, List<ProductModel>) -> Unit
     ) {
-        ref.addValueEventListener(object : ValueEventListener {
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val searchResults = mutableListOf<ProductModel>()
-                    for (data in snapshot.children) {
-                        val product = data.getValue(ProductModel::class.java)
-                        if (product != null) {
-                            // Search in product name and description
-                            if (product.name.contains(query, ignoreCase = true) ||
-                                product.description.contains(query, ignoreCase = true)
-                            ) {
-                                searchResults.add(product)
-                            }
-                        }
-                    }
-                    if (searchResults.isNotEmpty()) {
-                        callback(true, "Search completed", searchResults)
-                    } else {
-                        callback(false, "No products found matching your search", emptyList())
-                    }
-                } else {
-                    callback(false, "No products available", emptyList())
+
+                val result = snapshot.children.mapNotNull {
+                    it.getValue(ProductModel::class.java)
+                }.filter {
+                    it.name.contains(query, ignoreCase = true) ||
+                            it.description.contains(query, ignoreCase = true)
                 }
+
+                callback(true, "Done", result)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -167,12 +122,9 @@ class ProductRepoImpl : ProductRepo {
         newStock: Int,
         callback: (Boolean, String) -> Unit
     ) {
-        ref.child(productId).child("stock").setValue(newStock).addOnCompleteListener {
-            if (it.isSuccessful) {
-                callback(true, "Stock updated successfully")
-            } else {
-                callback(false, "${it.exception?.message}")
+        ref.child(productId).child("stock").setValue(newStock)
+            .addOnCompleteListener {
+                callback(it.isSuccessful, it.exception?.message ?: "Success")
             }
-        }
     }
 }

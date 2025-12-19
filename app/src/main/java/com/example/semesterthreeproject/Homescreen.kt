@@ -1,4 +1,4 @@
-package com.example.semesterthreeproject.view
+package com.example.semesterthreeproject
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,19 +22,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.semesterthreeproject.repository.PackageRepoImpl
-import com.example.semesterthreeproject.ui.theme.BackgroundWhite
+import com.example.semesterthreeproject.repository.ProductRepoImpl
 import com.example.semesterthreeproject.ui.theme.Blue
-import com.example.semesterthreeproject.ui.theme.Green
-import com.example.semesterthreeproject.ui.theme.OffWhite
 import com.example.semesterthreeproject.ui.theme.White
-import com.example.semesterthreeproject.viewmodel.PackageViewModel
+import com.example.semesterthreeproject.viewmodel.ProductViewModel
 
 @Composable
 fun HomeScreen(){
-    val packageViewModel = remember { PackageViewModel(PackageRepoImpl())}
+    val productViewModel = remember { ProductViewModel(ProductRepoImpl())}
     LaunchedEffect(Unit) {
-        packageViewModel.getAllProduct()
+        productViewModel.getAllProducts()
     }
     Scaffold { padding ->
         Box(modifier = Modifier.fillMaxSize()) {
@@ -43,7 +40,7 @@ fun HomeScreen(){
                     .fillMaxWidth()
                     .height(260.dp)
                     .background(
-                        color = Green,
+                        color = Blue,
                         shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
                     )
                     .padding(16.dp)
@@ -62,7 +59,7 @@ fun HomeScreen(){
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 200.dp)
-                    .background(BackgroundWhite)
+                    .background(White)
             ) {
                 Spacer(modifier = Modifier.height(48.dp))
             }
@@ -75,8 +72,8 @@ fun HomeScreen(){
                     .padding(horizontal = 16.dp)
                     .offset(y = 250.dp),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = White,
-                    unfocusedContainerColor = White
+                    focusedContainerColor = Blue,
+                    unfocusedContainerColor = White  // Fixed the typo here
                 ),
                 shape = RoundedCornerShape(16.dp)
             )
