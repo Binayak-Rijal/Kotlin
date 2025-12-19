@@ -1,206 +1,85 @@
-package com.example.semesterthreeproject
+package com.example.semesterthreeproject.view
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.semesterthreeproject.ui.theme.SemesterThreeProjectTheme
+import com.example.semesterthreeproject.repository.PackageRepoImpl
+import com.example.semesterthreeproject.ui.theme.BackgroundWhite
+import com.example.semesterthreeproject.ui.theme.Blue
+import com.example.semesterthreeproject.ui.theme.Green
+import com.example.semesterthreeproject.ui.theme.OffWhite
+import com.example.semesterthreeproject.ui.theme.White
+import com.example.semesterthreeproject.viewmodel.PackageViewModel
 
-class HomeScreen : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SemesterThreeProjectTheme {
-                HomeUI()
-            }
-        }
+@Composable
+fun HomeScreen(){
+    val packageViewModel = remember { PackageViewModel(PackageRepoImpl())}
+    LaunchedEffect(Unit) {
+        packageViewModel.getAllProduct()
     }
-}
-
-@Composable
-fun HomeUI() {
-    Scaffold(
-        bottomBar = { BottomNavigationBar() }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-
-            SearchBar()
-            Spacer(Modifier.height(10.dp))
-            LocationBar()
-            Spacer(Modifier.height(15.dp))
-            BannerSection()
-            Spacer(Modifier.height(15.dp))
-            CategoryRow()
-            Spacer(Modifier.height(20.dp))
-            FlashSaleSection()
-        }
-    }
-}
-
-@Composable
-fun SearchBar() {
-    OutlinedTextField(
-        value = "",
-        onValueChange = {},
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-        placeholder = { Text("Search here") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp),
-        shape = RoundedCornerShape(12.dp)
-    )
-}
-
-@Composable
-fun LocationBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFFF6F6F6), RoundedCornerShape(12.dp))
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color(0xFFFF6A00))
-        Spacer(Modifier.width(8.dp))
-        Text("St. no 8, Korangi, Khi")
-    }
-}
-
-@Composable
-fun BannerSection() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(150.dp)
-            .background(Color(0xFFFFE082), RoundedCornerShape(20.dp))
-            .padding(20.dp)
-    ) {
-        Column {
-            Text("Time for Special Deal", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            Text("70% Off", fontSize = 28.sp, fontWeight = FontWeight.Black, color = Color(0xFFE65100))
-            Spacer(Modifier.height(10.dp))
-            Button(onClick = {}, shape = RoundedCornerShape(10.dp)) {
-                Text("Shop Now")
-            }
-        }
-    }
-}
-
-@Composable
-fun CategoryRow() {
-    val categories = listOf("Beauty", "Home", "Fashion", "Appliances", "Party", "Bags")
-
-    LazyRow {
-        items(categories) { item ->
+    Scaffold { padding ->
+        Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .padding(end = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth()
+                    .height(260.dp)
+                    .background(
+                        color = Green,
+                        shape = RoundedCornerShape(bottomStart = 32.dp, bottomEnd = 32.dp)
+                    )
+                    .padding(16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .background(Color(0xFFFFF3E0), RoundedCornerShape(16.dp))
+                Text("Himachal Pradesh, India")
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Good morning, Alex!")
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    "Find your perfect\nadventure guide",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
                 )
-                Spacer(Modifier.height(5.dp))
-                Text(item, fontSize = 14.sp)
             }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 200.dp)
+                    .background(BackgroundWhite)
+            ) {
+                Spacer(modifier = Modifier.height(48.dp))
+            }
+            OutlinedTextField(
+                value = "",
+                onValueChange = {},
+                placeholder = { Text("Search destinations...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .offset(y = 250.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = White,
+                    unfocusedContainerColor = White
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
         }
-    }
-}
-
-@Composable
-fun FlashSaleSection() {
-    Text("Flash Sale", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-    Spacer(Modifier.height(6.dp))
-    Text("Only few items left, ending soon!")
-
-    Spacer(Modifier.height(10.dp))
-
-    LazyRow {
-        items(3) { index ->
-            FlashCard()
-        }
-    }
-}
-
-@Composable
-fun FlashCard() {
-    Column(
-        modifier = Modifier
-            .width(150.dp)
-            .padding(end = 12.dp)
-            .background(Color.White, RoundedCornerShape(14.dp))
-            .padding(10.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth()
-                .background(Color(0xFFFBE9E7), RoundedCornerShape(12.dp))
-        )
-        Spacer(Modifier.height(8.dp))
-        Text("Product Name", fontWeight = FontWeight.Bold)
-        Text("PKR 800", color = Color.Red)
-    }
-}
-
-@Composable
-fun BottomNavigationBar() {
-    NavigationBar {
-        NavigationBarItem(
-            selected = true,
-            onClick = {},
-            icon = { Text("🏠") },
-            label = { Text("Home") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Text("🔍") },
-            label = { Text("Explore") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Text("🔔") },
-            label = { Text("Notifications") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Text("🛒") },
-            label = { Text("My Cart") }
-        )
-        NavigationBarItem(
-            selected = false,
-            onClick = {},
-            icon = { Text("👤") },
-            label = { Text("Me") }
-        )
     }
 }

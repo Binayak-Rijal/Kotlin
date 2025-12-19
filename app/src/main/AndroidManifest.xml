@@ -12,6 +12,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SemesterThreeProject">
         <activity
+            android:name=".AddProductActivity"
+            android:exported="true"
+            android:label="@string/title_activity_add_product"
+            android:theme="@style/Theme.SemesterThreeProject">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".ForgetPasswordActivity"
             android:exported="true"
             android:label="@string/title_activity_forget_password"
@@ -126,6 +137,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
+
+
     </application>
 
 </manifest>

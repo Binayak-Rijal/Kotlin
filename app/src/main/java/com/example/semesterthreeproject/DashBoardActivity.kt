@@ -1,6 +1,7 @@
 package com.example.semesterthreeproject
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,6 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -35,6 +38,8 @@ fun DashBoard() {
     val email = activity.intent.getStringExtra("email")
     val password = activity.intent.getStringExtra("password")
 
+    val context = LocalContext.current
+
     data class NavItem(val label: String, val icon: Int)
 
     var selectedIndex by remember { mutableIntStateOf(0) }
@@ -47,6 +52,19 @@ fun DashBoard() {
     )
 
     Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                val intent = Intent(
+                    context,
+                    AddProductActivity::class.java
+                )
+                context.startActivity(intent)
+            }) {
+                Icon(
+                    Icons.Default.Add,null
+                )
+            }
+        },
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Ecommerce") },
